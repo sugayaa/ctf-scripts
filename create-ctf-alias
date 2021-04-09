@@ -1,0 +1,38 @@
+#!/bin/bash
+
+CURR_SHELL=$(ps "$PPID" | tail -1 | awk '{print $5}')
+
+if [[ $CURR_SHELL == 'fish' ]]
+then
+
+    echo "Creating ctf function at ~/.config/fish/functions"
+    cat <<EOF | tee ~/.config/fish/functions/ctf.fish > /dev/null
+        function ctf
+            cd ~/ctf/(ls -At ~/ctf | head -n 1)
+        end
+EOF
+    echo "alias ctf created, try typing 'ctf' in your fish shell"
+
+elif [[ $CURR_SHELL == 'bash' ]]
+then
+
+    grep ctf ~/.bashrc
+    if [[ $? -eq 0 ]];
+    then
+        echo "ctf alias already seems to exist"
+        echo "exitting..."
+    else
+        echo "alias ctf='cd ~/ctf/$(ls -At ~/ctf | head -n 1)'" >> ~/.bashrc
+        echo "Done!"
+        echo "Alias ctf created, update variables sourcing .bashrc: "
+        echo "$ source ~/.bashrc"
+        echo "And then try typing 'ctf' in your bash shell"
+    fi
+
+else
+    
+    echo "I'm at something else"
+    echo "Not implemented"
+
+fi
+

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+CURR_SHELL=$(ps "$PPID" | tail -1 | awk '{print $5}')
+
+
+if [[ $CURR_SHELL == 'fish' ]]
+then
+
+    if [[ :$PATH: == *:"$PWD":* ]];
+    then
+        echo "$PWD seems to be in PATH"
+        echo "exitting..."
+    else
+        echo "Prepending current directory to PATH"
+        fish -c "fish_add_path $PWD" 
+        echo "Done!"
+    fi
+
+elif [[ $CURR_SHELL == 'bash' ]]
+then
+
+    if [[ :$PATH: == *:"$PWD":* ]];
+    then
+        echo "$PWD seems to be in PATH"
+        echo "exitting..."
+    else
+        echo "Prepending current directory to PATH"
+        echo "PATH=$PWD:$PATH" >> ~/.bashrc
+        echo "Done!"
+        echo ""
+        echo "Update variables sourcing .bashrc: "
+        echo "$ source ~/.bashrc"
+        echo "cd out of this directory and try using the tools"
+        echo "e.g.:"
+        echo "$ cd"
+        echo "$ alphabet_padding"
+
+    fi
+
+else
+    
+    echo "I'm at something else"
+    echo "Not implemented"
+
+fi
+

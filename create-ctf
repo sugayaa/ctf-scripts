@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ -z "$1"  ]
+then
+    echo "No CTF name supplied"
+    echo "You can use -h for usage details"
+elif [ $# -ne 1 ]
+then
+    echo "Too many arguments suplied"
+    echo "You can use -h for usage details"
+fi
+
+if [[ $1 == '-h' ]]
+then
+    echo "Usage:"
+    echo "create_ctf [ctf_name]"
+    echo ""
+    echo "<ctf_name> stands for the directory name that will be created"
+fi
+
+YEAR=$(date +%Y)
+
+
+if [[ $(cd ~/ctf) -eq 0 ]]
+then
+    echo "CTF DIR EXISTS"
+    CTFDIR=$(realpath ~/ctf)
+    if [[ $(cd "$CTFDIR/$YEAR") -eq 0 ]]
+    then
+        echo "Creating dir $CTFDIR/$YEAR/$1/"
+        mkdir "$CTFDIR/$YEAR/$1"
+    else
+        echo "\'$YEAR/\' directory does not exists inside $CTFDIR"
+    fi
+else
+    echo "~/ctf/ directory does not exist."
+    echo "You should consider creating a CTF structure like the following:"
+    echo ""
+    echo "$ find ~/ctf/ -maxdepth 1"
+    echo "~/ctf/"
+    echo "~/ctf/2020"
+    echo "~/ctf/2021"
+    echo ""
+    echo "exitting..."
+fi
+
+

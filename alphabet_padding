@@ -1,0 +1,12 @@
+#!/bin/python
+from string import ascii_uppercase, ascii_lowercase
+
+sentence = ""
+
+for letter in ascii_uppercase:
+    sentence += letter*4
+
+for letter in ascii_lowercase:
+    sentence += letter*4
+
+print(sentence)
